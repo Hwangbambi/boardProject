@@ -2,10 +2,12 @@ package com.sparta.hanghaeboard.repository;
 
 import com.sparta.hanghaeboard.entity.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 //DB의 SQL 역할을 하는 인터페이스
 //<Board 클래스, id의 type>
 public interface BoardRepository extends JpaRepository<Board, Long> {
