@@ -100,10 +100,6 @@ public class BoardService {
                 // 토큰에서 사용자 정보 가져오기
                 claims = jwtUtil.getUserInfoFromToken(token);
 
-                System.out.println("claims.getSubject() : " + claims.getSubject());
-                System.out.println("boardRequestDto.getUsername() : " + boardRequestDto.getUsername());
-                System.out.println("board.getMember().getUsername() : " + board.getMember().getUsername());
-
                 //글작성자와 로그인한 사용자 일치 유무 확인
                 if (claims.getSubject().equals(board.getMember().getUsername())) {
 
