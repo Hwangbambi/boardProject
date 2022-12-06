@@ -13,13 +13,13 @@ public class BoardListResponseDto extends ResponseDto{
     //boardList 배열 값들은 안쪽에 있는 형태로 보여짐
     List<BoardResponseDto> boardList = new ArrayList<>();
 
-    public BoardListResponseDto() {
-        super("강의 목록 조회 성공", HttpStatus.OK.value());
-        //super() : 부모 클래스의 생성자 호출
-    }
-
     public void addBoardList(BoardResponseDto boardResponseDto) {
         boardList.add(boardResponseDto);
+    }
+
+    public BoardListResponseDto() {
+        super("게시글 목록 조회 성공", HttpStatus.OK.value());
+        //super() : 부모 클래스의 생성자 호출
     }
 
 }

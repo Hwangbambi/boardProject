@@ -11,7 +11,8 @@ import lombok.Setter;
 //그래서 완충재로 활용하는 것이 DTO
 public class BoardRequestDto {
     private String title;
-    private String writer;
+    //private String writer;
+    private String username;
     private String contents;
-    private Long password;
+    //private Long password;
 }

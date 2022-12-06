@@ -18,13 +18,13 @@ public class MemberController {
 
     //회원가입
     @PostMapping("/join")
-    public ResponseDto member(@RequestBody MemberRequestDto memberRequestDto){
+    public ResponseDto join(@RequestBody MemberRequestDto memberRequestDto){
         return memberService.join(memberRequestDto);
     }
 
     //로그인
     @PostMapping("/login")
-    public ResponseDto login(@RequestBody MemberRequestDto memberRequestDto,  HttpServletResponse response){
+    public ResponseDto login(@RequestBody MemberRequestDto memberRequestDto, HttpServletResponse response){
         return memberService.login(memberRequestDto,response);
     }
 

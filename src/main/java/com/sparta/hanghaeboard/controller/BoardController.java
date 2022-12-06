@@ -9,6 +9,8 @@ import com.sparta.hanghaeboard.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Optional;
@@ -27,8 +29,8 @@ public class BoardController {
     //Rest Api 관례 찾아보기, url 주소에 동사를 안쓰는게 좋음
     //게시글 작성
     @PostMapping("/boardWrite")
-    public BoardResponseDto boardWrite(@RequestBody BoardRequestDto boardRequestDto) {
-        return boardService.boardWrite(boardRequestDto);
+    public BoardResponseDto boardWrite(@RequestBody BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        return boardService.boardWrite(boardRequestDto,request);
     }
 
     //게시물 전체 조회
@@ -44,7 +46,7 @@ public class BoardController {
     }
 
     //게시물 수정
-    @PutMapping("/boardUpdate/{id}")
+    /*@PutMapping("/boardUpdate/{id}")
     public BoardResponseDto boardUpdate(@PathVariable Long id, @RequestBody BoardRequestDto boardRequestDto) {
         return boardService.boardUpdate(id, boardRequestDto);
     }
@@ -53,7 +55,7 @@ public class BoardController {
     @DeleteMapping("/boardDelete/{id}")
     public ResponseDto boardDelete(@PathVariable Long id, @RequestParam Long password) {
         return boardService.boardDelete(id,password);
-    }
+    }*/
 
 
 

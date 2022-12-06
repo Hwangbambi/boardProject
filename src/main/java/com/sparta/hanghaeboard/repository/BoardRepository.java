@@ -12,5 +12,6 @@ import java.util.Optional;
 //<Board 클래스, id의 type>
 public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByOrderByCreatedAtDesc();
-    Optional<Board> findByIdAndPassword(Long id, Long password);
+
+    //Optional<Board> findByIdAndPassword(Long id, Long password);
 }

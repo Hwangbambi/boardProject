@@ -36,10 +36,21 @@ public class MemberService {
         return new ResponseDto("회원가입 되었습니다.", HttpStatus.OK.value());
     }
 
-    @Transactional
+    @Transactional(readOnly = true) //입력, 수정, 삭제 이외엔 readOnly 하는게 좋음, 최적화
     public ResponseDto login(MemberRequestDto memberRequestDto, HttpServletResponse response) {
+        //1. username 유무 확인
+        Member member = memberRepository.findByUsername(memberRequestDto.getUsername()).orElseThrow(
+                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+        );
 
+        //2. pw 일치 확인
+        if (!member.getPassword().equals(memberRequestDto.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
 
-        return new ResponseDto("회원가입 되었습니다.", HttpStatus.OK.value());
+        //토큰 생성 후 response 에 추가 (name, value)
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUsername()));
+
+        return new ResponseDto("로그인 되었습니다.", HttpStatus.OK.value());
     }
 }
