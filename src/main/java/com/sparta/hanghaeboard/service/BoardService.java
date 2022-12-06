@@ -3,6 +3,7 @@ package com.sparta.hanghaeboard.service;
 import com.sparta.hanghaeboard.dto.BoardListResponseDto;
 import com.sparta.hanghaeboard.dto.BoardRequestDto;
 import com.sparta.hanghaeboard.dto.BoardResponseDto;
+import com.sparta.hanghaeboard.dto.ResponseDto;
 import com.sparta.hanghaeboard.entity.Board;
 import com.sparta.hanghaeboard.entity.Member;
 import com.sparta.hanghaeboard.jwt.JwtUtil;
@@ -10,11 +11,11 @@ import com.sparta.hanghaeboard.repository.BoardRepository;
 import com.sparta.hanghaeboard.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Service
@@ -78,36 +79,86 @@ public class BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("글이 존재하지 않습니다.")
         );
-        return new BoardResponseDto();
-    }
-
-    /*@Transactional
-    public BoardResponseDto boardUpdate(Long id, BoardRequestDto boardRequestDto) {
-        //1. id 유무확인
-        boardRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("글이 존재하지 않습니다.")
-        );
-
-        //2. id의 pw와 입력받은 pw 비교
-        Board board = boardRepository.findByIdAndPassword(id, boardRequestDto.getPassword()).orElseThrow(
-                () -> new IllegalArgumentException("비밀번호가 일치하지 않습니다.")
-        );
-        board.update(boardRequestDto); //boardRepository와 연결한게 없는데 어케 update 되는건지?
         return new BoardResponseDto(board);
     }
 
     @Transactional
-    public ResponseDto boardDelete(Long id, Long password) {
-        //1. id 유무확인
-        boardRepository.findById(id).orElseThrow(
+    public BoardResponseDto boardUpdate(Long id, BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        //1. 글 유무확인
+        Board board = boardRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("글이 존재하지 않습니다.")
         );
 
-        //2. id의 pw와 입력받은 pw 비교
-        boardRepository.findByIdAndPassword(id, password).orElseThrow(
-                () -> new IllegalArgumentException("비밀번호가 일치하지 않습니다.")
+        //2. 토큰 유무 확인 : Request에서 Token 가져오기
+        String token = jwtUtil.resolveToken(request);
+        // JWT 안에 있는 정보들을 담을 수 있는 객체
+        Claims claims;
+
+        if (token != null) {
+            //Token 검증 (위변조)
+            if (jwtUtil.validateToken(token)){
+                // 토큰에서 사용자 정보 가져오기
+                claims = jwtUtil.getUserInfoFromToken(token);
+
+                System.out.println("claims.getSubject() : " + claims.getSubject());
+                System.out.println("boardRequestDto.getUsername() : " + boardRequestDto.getUsername());
+                System.out.println("board.getMember().getUsername() : " + board.getMember().getUsername());
+
+                //글작성자와 로그인한 사용자 일치 유무 확인
+                if (claims.getSubject().equals(board.getMember().getUsername())) {
+
+                    board.update(boardRequestDto); //boardRepository와 연결한게 없는데 어케 update 되는건지?
+
+                } else {
+                    throw new IllegalArgumentException("글 작성자만 수정 가능합니다.");
+                }
+
+                return new BoardResponseDto(board);
+
+            } else {
+                throw new IllegalArgumentException("Token Error");
+            }
+
+        } else {
+            throw new IllegalArgumentException("토큰이 없습니다.");
+        }
+    }
+
+    @Transactional
+    public ResponseDto boardDelete(Long id, HttpServletRequest request) {
+        //1. 글 유무확인
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("글이 존재하지 않습니다.")
         );
-        boardRepository.deleteById(id);
-        return new ResponseDto("글삭제 완료", HttpStatus.OK.value());
-    }*/
+
+        //2. 토큰 유무 확인 : Request에서 Token 가져오기
+        String token = jwtUtil.resolveToken(request);
+        // JWT 안에 있는 정보들을 담을 수 있는 객체
+        Claims claims;
+
+        if (token != null) {
+            //Token 검증 (위변조)
+            if (jwtUtil.validateToken(token)){
+                // 토큰에서 사용자 정보 가져오기
+                claims = jwtUtil.getUserInfoFromToken(token);
+
+                //글작성자와 로그인한 사용자 일치 유무 확인
+                if (claims.getSubject().equals(board.getMember().getUsername())) {
+
+                    boardRepository.deleteById(id);
+                    return new ResponseDto("글삭제 완료", HttpStatus.OK.value());
+
+                } else {
+                    throw new IllegalArgumentException("글 작성자만 삭제 가능합니다.");
+                }
+
+            } else {
+                throw new IllegalArgumentException("Token Error");
+            }
+
+        } else {
+            throw new IllegalArgumentException("토큰이 없습니다.");
+        }
+
+    }
 }

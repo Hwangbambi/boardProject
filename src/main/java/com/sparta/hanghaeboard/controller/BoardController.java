@@ -46,16 +46,16 @@ public class BoardController {
     }
 
     //게시물 수정
-    /*@PutMapping("/boardUpdate/{id}")
-    public BoardResponseDto boardUpdate(@PathVariable Long id, @RequestBody BoardRequestDto boardRequestDto) {
-        return boardService.boardUpdate(id, boardRequestDto);
+    @PutMapping("/boardUpdate/{id}")
+    public BoardResponseDto boardUpdate(@PathVariable Long id, @RequestBody BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        return boardService.boardUpdate(id, boardRequestDto, request);
     }
 
     //게시물 삭제
     @DeleteMapping("/boardDelete/{id}")
-    public ResponseDto boardDelete(@PathVariable Long id, @RequestParam Long password) {
-        return boardService.boardDelete(id,password);
-    }*/
+    public ResponseDto boardDelete(@PathVariable Long id, HttpServletRequest request) {
+        return boardService.boardDelete(id,request);
+    }
 
 
 

@@ -26,7 +26,7 @@ public class Board extends Timestamped{
     //private Long password;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId", nullable = false) //member 테이블의 pk와 연결 됨
     private Member member;
 
     public Board(BoardRequestDto boardRequestDto, Member member) {
