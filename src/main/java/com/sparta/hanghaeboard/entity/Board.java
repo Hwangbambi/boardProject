@@ -19,9 +19,6 @@ public class Board extends Timestamped{
     @Column(nullable = false) //NOT NULL 의미, TRUE 라면 NULL 허용
     private String title;
 
-    //@Column(nullable = false)
-    //private String writer;
-
     @Column(nullable = false)
     private String contents;
 
@@ -34,15 +31,12 @@ public class Board extends Timestamped{
 
     public Board(BoardRequestDto boardRequestDto, Member member) {
         this.title = boardRequestDto.getTitle();
-        //this.writer = boardRequestDto.getWriter();
         this.contents = boardRequestDto.getContents();
-        //this.password = boardRequestDto.getPassword();
         this.member = member;
     }
 
     public void update(BoardRequestDto boardRequestDto) {
         this.title = boardRequestDto.getTitle();
-        //this.writer = boardRequestDto.getWriter();
         this.contents = boardRequestDto.getContents();
     }
 }

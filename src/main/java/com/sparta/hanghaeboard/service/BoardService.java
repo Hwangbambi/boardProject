@@ -45,8 +45,6 @@ public class BoardService {
                         () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
                 );
 
-                System.out.println("member" + member);
-
                 //로그인한 username 으로 글작성
                 Board board = new Board(boardRequestDto,member); //db에 저장할 데이터 1 row 을 만들었다 라고 이해
                 boardRepository.save(board);
@@ -70,7 +68,7 @@ public class BoardService {
         List<Board> boardList = boardRepository.findAllByOrderByCreatedAtDesc(); //작성일 기준 내림차순
 
         for (Board board : boardList) {
-            boardListResponseDto.addBoardList(new BoardResponseDto());
+            boardListResponseDto.addBoardList(new BoardResponseDto(board));
         }
         return boardListResponseDto;
     }
