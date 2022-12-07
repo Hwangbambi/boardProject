@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class Board extends Timestamped{
 
     @Id //기본키(PK)를 지정
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     //Id값을 따로 할당하지 않아도 데이터베이스가 자동으로 AUTO_INCREMENT를 하여 기본키를 생성 (1씩 증가)
     private Long id;
 
@@ -21,9 +21,6 @@ public class Board extends Timestamped{
 
     @Column(nullable = false)
     private String contents;
-
-    //@Column(nullable = false)
-    //private Long password;
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false) //member 테이블의 pk와 연결 됨

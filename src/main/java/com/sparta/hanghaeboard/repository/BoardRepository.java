@@ -13,5 +13,6 @@ import java.util.Optional;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByOrderByCreatedAtDesc();
 
+    //boolean existsById(Long id);
     //Optional<Board> findByIdAndPassword(Long id, Long password);
 }

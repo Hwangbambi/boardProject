@@ -1,11 +1,10 @@
 package com.sparta.hanghaeboard.controller;
 
-import com.sparta.hanghaeboard.dto.MemberRequestDto;
+import com.sparta.hanghaeboard.dto.JoinRequestDto;
+import com.sparta.hanghaeboard.dto.LoginRequestDto;
 import com.sparta.hanghaeboard.dto.ResponseDto;
 import com.sparta.hanghaeboard.service.MemberService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,13 +17,13 @@ public class MemberController {
 
     //회원가입
     @PostMapping("/join")
-    public ResponseDto join(@RequestBody MemberRequestDto memberRequestDto){
-        return memberService.join(memberRequestDto);
+    public ResponseDto join(@RequestBody JoinRequestDto joinRequestDto){
+        return memberService.join(joinRequestDto);
     }
 
     //로그인
     @PostMapping("/login")
-    public ResponseDto login(@RequestBody MemberRequestDto memberRequestDto, HttpServletResponse response){
+    public ResponseDto login(@RequestBody LoginRequestDto memberRequestDto, HttpServletResponse response){
         return memberService.login(memberRequestDto,response);
     }
 
