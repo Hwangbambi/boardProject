@@ -17,11 +17,11 @@ public class Comment extends Timestamped{
     @Column(nullable = false)
     private String content;
 
-    @ManyToOne() //fetch 알아보기
+    @ManyToOne(fetch = FetchType.LAZY) //fetch 알아보기
     @JoinColumn(name = "userId", nullable = false) //Member Id 와 join
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "boardId", nullable = false) //Board Id 와 join
     private Board board;
 

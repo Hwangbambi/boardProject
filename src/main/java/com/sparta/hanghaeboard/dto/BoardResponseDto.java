@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class BoardResponseDto {
+public class BoardResponseDto extends ResponseDto{
     private Long id;
     private String title;
     //private String writer;
@@ -17,6 +17,10 @@ public class BoardResponseDto {
     private String contents;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+
+    public BoardResponseDto(String msg, int statusCode) {
+        super(msg, statusCode);
+    }
 
     public BoardResponseDto(Board board, Member member) {
         this.id = board.getId();

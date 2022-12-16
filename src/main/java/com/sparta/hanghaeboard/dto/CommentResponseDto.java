@@ -9,13 +9,17 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class CommentResponseDto {
+public class CommentResponseDto extends ResponseDto{
     private Long id;
     private String content;
     private String username;
     Long boardId;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+
+    public CommentResponseDto(String msg, int statusCode) {
+        super(msg, statusCode);
+    }
 
     public CommentResponseDto(Comment comment) {
         this.id = comment.getId();

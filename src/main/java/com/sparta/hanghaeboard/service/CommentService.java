@@ -28,7 +28,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final JwtUtil jwtUtil;
 
-    public CommentResponseDto comment(Long id, CommentRequestDto commentRequestDto, HttpServletRequest request) {
+    public CommentResponseDto comments(Long id, CommentRequestDto commentRequestDto, HttpServletRequest request) {
         //1. 토큰 확인
         String token = jwtUtil.resolveToken(request);
         Claims claims;
@@ -44,9 +44,6 @@ public class CommentService {
                         () -> new IllegalArgumentException("존재하지 않는 회원입니다.")
                 );
 
-                // 해당 사용자 권한 확인
-                //String role = memberRepository.find
-
                 //2. 글 유무 확인
                 Board board = boardRepository.findById(id).orElseThrow(
                         () -> new IllegalArgumentException("존재하지 않는 글 입니다.")
@@ -59,11 +56,11 @@ public class CommentService {
                 return new CommentResponseDto(comment);
 
             } else {
-                throw new IllegalArgumentException("Token Error");
+                return new CommentResponseDto("토큰이 유효하지 않습니다.",HttpStatus.BAD_REQUEST.value());
             }
 
         } else {
-            throw new IllegalArgumentException("로그인 후 댓글 작성 가능합니다.");
+            return new CommentResponseDto("토큰이 유효하지 않습니다.",HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -102,15 +99,15 @@ public class CommentService {
                     return new CommentResponseDto(comment);
 
                 } else {
-                    throw new IllegalArgumentException("관리자 또는 댓글 작성자만 수정 가능합니다.");
+                    return new CommentResponseDto("작성자만 수정할 수 있습니다.",HttpStatus.BAD_REQUEST.value());
                 }
 
             } else {
-                throw new IllegalArgumentException("Token Error");
+                return new CommentResponseDto("토큰이 유효하지 않습니다.",HttpStatus.BAD_REQUEST.value());
             }
 
         } else {
-            throw new IllegalArgumentException("로그인 후 댓글 작성 가능합니다.");
+            return new CommentResponseDto("토큰이 유효하지 않습니다.",HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -144,15 +141,15 @@ public class CommentService {
                     return new ResponseDto("댓글 삭제 완료", HttpStatus.OK.value());
 
                 } else {
-                    throw new IllegalArgumentException("관리자 또는 댓글 작성자만 수정 가능합니다.");
+                    return new CommentResponseDto("작성자만 삭제할 수 있습니다.",HttpStatus.BAD_REQUEST.value());
                 }
 
             } else {
-                throw new IllegalArgumentException("Token Error");
+                return new CommentResponseDto("토큰이 유효하지 않습니다.",HttpStatus.BAD_REQUEST.value());
             }
 
         } else {
-            throw new IllegalArgumentException("로그인 후 댓글 작성 가능합니다.");
+            return new CommentResponseDto("토큰이 유효하지 않습니다.",HttpStatus.BAD_REQUEST.value());
         }
 
     }

@@ -5,9 +5,12 @@ import com.sparta.hanghaeboard.dto.BoardRequestDto;
 import com.sparta.hanghaeboard.dto.BoardResponseDto;
 import com.sparta.hanghaeboard.dto.ResponseDto;
 import com.sparta.hanghaeboard.entity.Board;
+import com.sparta.hanghaeboard.entity.Comment;
 import com.sparta.hanghaeboard.entity.Member;
+import com.sparta.hanghaeboard.entity.UserRoleEnum;
 import com.sparta.hanghaeboard.jwt.JwtUtil;
 import com.sparta.hanghaeboard.repository.BoardRepository;
+import com.sparta.hanghaeboard.repository.CommentRepository;
 import com.sparta.hanghaeboard.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +24,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BoardService {
-
+    private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
-    //BoardRepository 연결되어 사용할 수 있다.
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public BoardResponseDto boardWrite(BoardRequestDto boardRequestDto, HttpServletRequest request) {
+    public BoardResponseDto postBoarss(BoardRequestDto boardRequestDto, HttpServletRequest request) {
 
         // Request에서 Token 가져오기
         String token = jwtUtil.resolveToken(request);
@@ -53,20 +55,23 @@ public class BoardService {
                 return new BoardResponseDto(board,member);
 
             } else {
-                throw new IllegalArgumentException("Token Error");
+                return new BoardResponseDto("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST.value());
             }
 
         } else {
-            throw new IllegalArgumentException("토큰이 없습니다.");
+            return new BoardResponseDto("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST.value());
         }
     }
 
     @Transactional(readOnly = true)
     //데이터 추가, 수정, 삭제 등으로 이루어진 작업을 처리하던 중 오류가 발생했을 때 모든 작업들을 원상태로 되돌릴 수 있다.
-    public BoardListResponseDto getBoardList() {
+    public BoardListResponseDto getBorads() {
         BoardListResponseDto boardListResponseDto = new BoardListResponseDto();
 
         List<Board> boardList = boardRepository.findAllByOrderByCreatedAtDesc(); //작성일 기준 내림차순
+
+        //댓글 목록 출력
+        List<Comment> commentList = commentRepository.findAllByOrderByCreatedAtDesc();
 
         for (Board board : boardList) {
             boardListResponseDto.addBoardList(new BoardResponseDto(board));
@@ -79,6 +84,7 @@ public class BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("글이 존재하지 않습니다.")
         );
+
         return new BoardResponseDto(board);
     }
 
@@ -100,23 +106,28 @@ public class BoardService {
                 // 토큰에서 사용자 정보 가져오기
                 claims = jwtUtil.getUserInfoFromToken(token);
 
-                //글작성자와 로그인한 사용자 일치 유무 확인
-                if (claims.getSubject().equals(board.getMember().getUsername())) {
+                // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회 - JwtUtil 에서 토큰 생성시 setSubject(username) 했기 때문에 getSubject()
+                Member member = memberRepository.findByUsername(claims.getSubject()).orElseThrow(
+                        () -> new IllegalArgumentException("존재하지 않는 회원입니다.")
+                );
+
+                //댓글 수정 권한 조회(admin, 댓글 작성자)
+                if (claims.getSubject().equals(board.getMember().getUsername()) || member.getRole().equals(UserRoleEnum.ADMIN)) {
 
                     board.update(boardRequestDto); //boardRepository와 연결한게 없는데 어케 update 되는건지?
 
                 } else {
-                    throw new IllegalArgumentException("글 작성자만 수정 가능합니다.");
+                    throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
                 }
 
                 return new BoardResponseDto(board);
 
             } else {
-                throw new IllegalArgumentException("Token Error");
+                return new BoardResponseDto("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST.value());
             }
 
         } else {
-            throw new IllegalArgumentException("토큰이 없습니다.");
+            return new BoardResponseDto("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -138,22 +149,27 @@ public class BoardService {
                 // 토큰에서 사용자 정보 가져오기
                 claims = jwtUtil.getUserInfoFromToken(token);
 
-                //글작성자와 로그인한 사용자 일치 유무 확인
-                if (claims.getSubject().equals(board.getMember().getUsername())) {
+                // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회 - JwtUtil 에서 토큰 생성시 setSubject(username) 했기 때문에 getSubject()
+                Member member = memberRepository.findByUsername(claims.getSubject()).orElseThrow(
+                        () -> new IllegalArgumentException("존재하지 않는 회원입니다.")
+                );
+
+                //댓글 수정 권한 조회(admin, 댓글 작성자)
+                if (claims.getSubject().equals(board.getMember().getUsername()) || member.getRole().equals(UserRoleEnum.ADMIN)) {
 
                     boardRepository.deleteById(id);
                     return new ResponseDto("글삭제 완료", HttpStatus.OK.value());
 
                 } else {
-                    throw new IllegalArgumentException("글 작성자만 삭제 가능합니다.");
+                    return new ResponseDto("작성자만 삭제 할 수 있습니다.",HttpStatus.BAD_REQUEST.value());
                 }
 
             } else {
-                throw new IllegalArgumentException("Token Error");
+                return new ResponseDto("토큰이 유효하지 않습니다.",HttpStatus.BAD_REQUEST.value());
             }
 
         } else {
-            throw new IllegalArgumentException("토큰이 없습니다.");
+            return new ResponseDto("토큰이 유효하지 않습니다.",HttpStatus.BAD_REQUEST.value());
         }
 
     }

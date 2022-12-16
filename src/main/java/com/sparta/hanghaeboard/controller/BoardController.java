@@ -28,31 +28,31 @@ public class BoardController {
 
     //Rest Api 관례 찾아보기, url 주소에 동사를 안쓰는게 좋음
     //게시글 작성
-    @PostMapping("/boardWrite")
-    public BoardResponseDto boardWrite(@RequestBody BoardRequestDto boardRequestDto, HttpServletRequest request) {
-        return boardService.boardWrite(boardRequestDto,request);
+    @PostMapping("/boards")
+    public BoardResponseDto postBoarss(@RequestBody BoardRequestDto boardRequestDto, HttpServletRequest request) {
+        return boardService.postBoarss(boardRequestDto,request);
     }
 
     //게시물 전체 조회
-    @GetMapping("/boradList")
-    public BoardListResponseDto getBoardList() {
-        return boardService.getBoardList();
+    @GetMapping("/boards")
+    public BoardListResponseDto getBorads() {
+        return boardService.getBorads();
     }
 
     //게시물 상세 조회
-    @GetMapping("/boardDetail") //파라미터 값을 가져올 땐 @RequestParam
+    @GetMapping("/boards-detail") //파라미터 값을 가져올 땐 @RequestParam
     public BoardResponseDto getBoardDetail(@RequestParam Long id) {
         return boardService.getBoardDetail(id);
     }
 
     //게시물 수정
-    @PutMapping("/boardUpdate/{id}")
+    @PutMapping("/boards-update/{id}")
     public BoardResponseDto boardUpdate(@PathVariable Long id, @RequestBody BoardRequestDto boardRequestDto, HttpServletRequest request) {
         return boardService.boardUpdate(id, boardRequestDto, request);
     }
 
     //게시물 삭제
-    @DeleteMapping("/boardDelete/{id}")
+    @DeleteMapping("/boards-delete/{id}")
     public ResponseDto boardDelete(@PathVariable Long id, HttpServletRequest request) {
         return boardService.boardDelete(id,request);
     }

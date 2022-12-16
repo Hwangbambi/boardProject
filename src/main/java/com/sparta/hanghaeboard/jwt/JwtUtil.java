@@ -1,10 +1,15 @@
 package com.sparta.hanghaeboard.jwt;
 
+import com.sparta.hanghaeboard.entity.UserRoleEnum;
+import com.sparta.hanghaeboard.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -18,6 +23,8 @@ import java.util.Date;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
+    private final UserDetailsServiceImpl userDetailsService;
+
     //Header Name(key)
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
@@ -55,13 +62,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String username) {
+    public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username)
-                        .claim(AUTHORIZATION_KEY, "user")
+                        .claim(AUTHORIZATION_KEY, role)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME)) //토큰 유효기간 : 현재 시간 + 1시간
                         .setIssuedAt(date) //토큰 생성일
                         .signWith(key, signatureAlgorithm) //어떤 알고리즘으로 암호화 할 건지
@@ -89,6 +96,12 @@ public class JwtUtil {
     // 토큰 검증 코드와 동일한테 getBody() 를 통해서 토근의 정보를 가져올 수 있음
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    // 인증 객체 생성
+    public Authentication createAuthentication(String username) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
 }

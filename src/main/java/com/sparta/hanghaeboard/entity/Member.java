@@ -15,21 +15,20 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    public Member(JoinRequestDto joinRequestDto, UserRoleEnum role) {
+    public Member(JoinRequestDto joinRequestDto,UserRoleEnum role) {
         this.username = joinRequestDto.getUsername();
         this.password = joinRequestDto.getPassword();
         this.role = role;
     }
-
 
 }
